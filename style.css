@@ -219,6 +219,7 @@ h1, h2 {
 }
 
 .open__name {
+  text-wrap: balance;
   margin-top: var(--space-sm);
   font-size: var(--text-3xl);
   font-weight: 700;
@@ -227,6 +228,7 @@ h1, h2 {
 }
 
 .open__line {
+  text-wrap: pretty;
   max-width: 52ch;
   margin-top: var(--space-2xs);
   color: var(--color-ink-2);
@@ -259,7 +261,7 @@ h1, h2 {
 }
 
 .group {
-  padding-block: var(--space-lg);
+  padding-block: var(--space-lg) calc(var(--space-lg) + var(--space-2xs));
   border-bottom: 1px solid var(--color-rule);
 }
 
@@ -269,12 +271,12 @@ h1, h2 {
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   font-weight: 500;
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
   color: var(--color-ink-3);
 }
 
 .group__note {
+  text-wrap: pretty;
   max-width: 60ch;
   margin-top: var(--space-2xs);
   color: var(--color-ink-3);
@@ -302,6 +304,8 @@ h1, h2 {
 
 .group .entry:last-of-type { border-bottom: 0; }
 .entry:hover { background: var(--color-paper-2); }
+.entry:active { transform: scale(0.995); }
+.entry { will-change: transform; }
 
 .entry__handle {
   flex: 0 0 11rem;
@@ -328,7 +332,7 @@ h1, h2 {
 .entry__arrow {
   flex: 0 0 auto;
   color: var(--color-ink-3);
-  transition: transform var(--dur-base) var(--ease-out);
+  transition: transform var(--dur-quick) var(--ease-out);
 }
 
 .entry:hover .entry__arrow { transform: translateX(3px); }
@@ -426,12 +430,36 @@ h1, h2 {
 }
 
 .foot-dense p {
+  text-wrap: pretty;
   max-width: 72ch;
   color: var(--color-ink-3);
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   line-height: 1.7;
   font-variant-numeric: tabular-nums;
+}
+
+.foot-legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.04em;
+}
+
+.foot-legal a {
+  color: var(--color-ink-3);
+  border-bottom: 1px solid var(--color-rule-2);
+  padding-bottom: 1px;
+  transition: color var(--dur-quick) var(--ease-out),
+              border-color var(--dur-quick) var(--ease-out);
+}
+
+.foot-legal a:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 /* ---------- responsive motion ---------- */

@@ -32,12 +32,12 @@
   --text-sm:   0.875rem;
   --text-base: 1rem;
   --text-lg:   1.125rem;
-  --text-3xl:  clamp(1.875rem, 1.5rem + 1.9vw, 2.75rem);
+  --text-3xl:  clamp(2rem, 1.4rem + 2.6vw, 3.5rem);
 
   --leading-snug: 1.25;
   --leading-body: 1.6;
 
-  --tracking-display: -0.035em;
+  --tracking-display: -0.045em;
   --tracking-body: -0.011em;
   --tracking-label: 0.14em;
 
@@ -50,7 +50,7 @@
   --space-xl:  4rem;
 
   /* ---- frame ---- */
-  --wrap: 60rem;
+  --wrap: 72rem;
   --gutter: clamp(1.125rem, 4vw, 2.5rem);
 
   /* ---- shape: tight radii, the Cobalt register ---- */
