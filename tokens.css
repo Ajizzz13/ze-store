@@ -1,4 +1,4 @@
-/* ZE VPN Store — token layer. Link-in-bio.
+/* ZE VPN Store - token layer. Bento.
    Accent is the brand blue lifted from the @ZeStoreOrderBot avatar.
    Every colour in the page resolves here. No hex, no oklch() outside :root. */
 
@@ -8,6 +8,7 @@
   --color-paper-2:    oklch(16.5%  0.016 265);
   --color-paper-3:    oklch(21%    0.018 265);
   --color-paper-emit: oklch(70%    0.17  258 / 0.05);
+  --color-shell:      oklch(20%    0.018 265);
 
   /* ---- ink ---- */
   --color-ink:        oklch(96%    0.006 262);
@@ -16,18 +17,18 @@
 
   /* ---- accent: brand blue, hue 258 sampled from the bot avatar ---- */
   --color-accent:     oklch(78%    0.16  258);
-  --color-accent-2:   oklch(72%    0.17  262);
+  --color-accent-2:   oklch(70%    0.17  262);
   --color-accent-ink: oklch(17%    0.04  258);
-  --color-glow:       oklch(78%    0.16  258 / 0.4);
-  --color-glow-soft:  oklch(78%    0.16  258 / 0.16);
   --color-focus:      oklch(90%    0.15  250);
   --color-focus-halo: oklch(15%    0.04  258);
 
+  --color-accent-ink-2: oklch(28%   0.05  258);
+
   /* ---- rules ---- */
-  --rule-blueprint:   oklch(96%    0.006 262  / 0.04);
+  --rule-blueprint:   oklch(96%    0.006 262  / 0.035);
   --color-rule:       oklch(96%    0.006 262  / 0.10);
-  --color-rule-2:     oklch(96%    0.006 262  / 0.20);
-  --color-rule-warm:  oklch(70%    0.17  258  / 0.3);
+  --color-rule-2:     oklch(96%    0.006 262  / 0.22);
+  --color-rule-warm:  oklch(70%    0.17  258  / 0.34);
 
   /* ---- type ---- */
   --font-display: "Instrument Serif", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
@@ -39,19 +40,19 @@
   --text-sm:   0.8125rem;
   --text-base: 0.9375rem;
   --text-lg:   1.0625rem;
-  --text-xl:   1.1875rem;
-  --text-2xl:  1.375rem;
-  --text-3xl:  clamp(1.5rem, 1.1rem + 1.7vw, 2rem);
-  --text-4xl:  clamp(2rem, 1.4rem + 2.6vw, 2.875rem);
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  clamp(1.625rem, 1.2rem + 2vw, 2.25rem);
+  --text-4xl:  clamp(2rem, 1.4rem + 2.6vw, 2.75rem);
 
-  --leading-tight: 1.14;
-  --leading-snug:  1.32;
+  --leading-tight: 1.12;
+  --leading-snug:  1.4;
   --leading-body:  1.6;
 
   --tracking-eyebrow: 0.16em;
   --tracking-display: -0.015em;
 
-  /* ---- space: 4pt grid, named ---- */
+  /* ---- space: 4pt grid ---- */
   --space-3xs: 0.25rem;
   --space-2xs: 0.5rem;
   --space-xs:  0.75rem;
@@ -60,24 +61,29 @@
   --space-lg:  1.75rem;
   --space-xl:  2.25rem;
   --space-2xl: 3rem;
-  --space-3xl: 3.75rem;
-  --space-4xl: 4.5rem;
+  --space-3xl: 4rem;
 
-  /* ---- measure & frame ---- */
-  --wrap: 34rem;
-  --wrap-wide: 46rem;
-  --page-gutter: 1.25rem;
+  /* ---- frame ---- */
+  --wrap: 46rem;
+  --gutter: 1rem;
 
-  /* ---- motion: named, no overshoot on UI state ---- */
-  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-quick: 140ms;
+  /* ---- shape: one scale, documented ---- */
+  --radius-tile: 1.25rem;
+  --radius-core: 0.875rem;
+  --radius-ico:  0.625rem;
+  --radius-mark: 1.375rem;
+  --radius-pill: 999px;
+
+  /* ---- motion ---- */
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --dur-base: 240ms;
-  --dur-pulse: 4s;
+  --dur-breathe: 3.2s;
 
-  /* ---- hit target ---- */
-  --tap: 48px;
+  /* ---- texture ---- */
+  --cell: 2.75rem;
 }
 
 @media (min-width: 40rem) {
-  :root { --page-gutter: 1.5rem; }
+  :root { --gutter: 1.5rem; }
 }
