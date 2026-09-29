@@ -34,6 +34,7 @@
 html {
   overflow-x: clip;
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
@@ -47,6 +48,30 @@ body {
   letter-spacing: var(--tracking-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(3rem);
+  filter: blur(0.45rem);
+  transition: opacity var(--dur-reveal) var(--ease-out),
+              transform var(--dur-reveal) var(--ease-out),
+              filter var(--dur-reveal) var(--ease-out);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
 }
 
 img { display: block; max-width: 100%; height: auto; }
@@ -94,19 +119,19 @@ h1, h2 {
   border-radius: var(--radius-core);
   box-shadow: 0 0 0 3px var(--color-focus-halo);
 }
-
-/* ---------- N9 · edge-aligned minimal nav ---------- */
-/* Vast empty space between wordmark and CTA is the design. No link row. */
 .nav-edge {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
-  width: 100%;
-  max-width: var(--wrap);
-  margin-inline: auto;
-  padding: var(--space-sm) var(--gutter);
-  border-bottom: 1px solid var(--color-rule);
+  width: min(calc(100% - 2 * var(--gutter)), var(--wrap));
+  margin: var(--space-md) auto 0;
+  padding: var(--space-2xs) var(--space-2xs) var(--space-2xs) var(--space-sm);
+  border: 1px solid var(--color-rule);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--color-paper) 86%, transparent);
+  box-shadow: var(--shadow-soft), var(--shadow-inset);
+  backdrop-filter: blur(1rem);
 }
 
 .wordmark {
@@ -130,37 +155,62 @@ h1, h2 {
 .nav-edge__cta {
   display: inline-flex;
   align-items: center;
+  gap: var(--space-2xs);
   min-height: var(--tap);
-  padding: 0.35rem 1rem;
+  padding: 0.25rem 0.35rem 0.25rem 1rem;
   border: 1px solid var(--color-accent);
-  border-radius: var(--radius-core);
+  border-radius: 999px;
   color: var(--color-accent);
   font-size: var(--text-sm);
   font-weight: 600;
   white-space: nowrap;
   transition: background var(--dur-quick) var(--ease-out),
-              color var(--dur-quick) var(--ease-out);
+              color var(--dur-quick) var(--ease-out),
+              transform var(--dur-quick) var(--ease-out);
 }
 
-.nav-edge__cta:hover {
-  background: var(--color-accent);
-  color: var(--color-accent-ink);
+.nav-edge__cta:hover { background: var(--color-accent); color: var(--color-accent-ink); }
+.nav-edge__cta:active { transform: scale(0.98); }
+
+.nav-edge__icon {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-accent-soft);
+  transition: transform var(--dur-quick) var(--ease-out),
+              background var(--dur-quick) var(--ease-out);
 }
 
-/* ---------- page frame ---------- */
-.page {
-  width: 100%;
-  max-width: var(--wrap);
-  margin-inline: auto;
-  padding: 0 var(--gutter) var(--space-xl);
+.nav-edge__cta:hover .nav-edge__icon {
+  transform: translate(0.25rem, -0.0625rem) scale(1.05);
+  background: color-mix(in oklch, var(--color-accent-ink) 18%, transparent);
 }
 
-/* ---------- opening: one short paragraph, no display hero ---------- */
-.open {
-  padding-block: var(--space-lg) var(--space-md);
-  border-bottom: 1px solid var(--color-rule-2);
+.open__shell {
+  padding: 0.375rem;
+  border: 1px solid var(--color-rule);
+  border-radius: calc(var(--radius-tile) + 0.375rem);
+  background: var(--color-paper-2);
+  box-shadow: var(--shadow-soft);
 }
 
+.open__core {
+  padding: var(--space-lg) var(--space-md);
+  border-radius: var(--radius-tile);
+  background: var(--color-paper);
+  box-shadow: var(--shadow-inset);
+}
+
+.eyebrow {
+  margin-top: var(--space-md);
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
 .open__mark {
   width: 4.5rem;
   height: 4.5rem;
@@ -384,11 +434,22 @@ h1, h2 {
   font-variant-numeric: tabular-nums;
 }
 
-/* ---------- motion: reduced-motion collapses to a crossfade ---------- */
+/* ---------- responsive motion ---------- */
+@media (max-width: 48rem) {
+  .nav-edge { width: calc(100% - 2 * var(--gutter)); }
+  .page { padding-inline: var(--gutter); }
+  .entry { align-items: flex-start; flex-wrap: wrap; gap: var(--space-2xs) var(--space-sm); padding-block: var(--space-sm); }
+  .entry__handle { flex-basis: calc(100% - 2rem); }
+  .entry__desc { flex-basis: calc(100% - 2rem); }
+  .entry__arrow { margin-left: auto; margin-top: -2rem; }
+  .open__core { padding: var(--space-md) var(--space-sm); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  .reveal { opacity: 1; transform: none; filter: none; }
 }

@@ -57,10 +57,17 @@
   --radius-tile: 0.375rem;
   --radius-core: 0.25rem;
 
-  /* ---- motion: minimal, composed, no reveals ---- */
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --dur-quick: 140ms;
-  --dur-base: 200ms;
+  /* ---- motion: spring-like interpolation for premium micro-interactions ---- */
+  --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-quick: 220ms;
+  --dur-base: 700ms;
+  --dur-reveal: 900ms;
+  --color-accent-soft: oklch(96% 0.025 258);
+
+  /* ---- depth: restrained, diffused, cobalt-tinted ---- */
+  --shadow-soft: 0 1.25rem 3rem oklch(19% 0.024 258 / 0.08);
+  --shadow-inset: inset 0 1px 1px oklch(99% 0.003 250 / 0.7);
 
   /* ---- depth: tinted with the ink hue ---- */
 
