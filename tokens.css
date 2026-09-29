@@ -1,33 +1,36 @@
-/* ZE VPN Store - token layer. Cobalt on porcelain.
-   Light ground, so the card reads as a bright tile in a social feed.
-   Accent is the brand blue lifted from the @ZeStoreOrderBot avatar.
+/* ZE VPN Store - token layer. Cobalt on Porcelain.
+   Light warm-neutral ground, one blue accent sampled from the bot avatar,
+   plus a tint ramp so blocks separate without breaking the single palette.
    Every colour in the page resolves here. No hex, no oklch() outside :root. */
 
 :root {
-  /* ---- ground: light, cool-tinted, never pure white ---- */
-  --color-paper:      oklch(98.5%  0.004 250);
+  /* ---- ground: warm-neutral, never pure white ---- */
+  --color-paper:      oklch(97.6%  0.006 92);
   --color-paper-2:    oklch(100%   0     0);
-  --color-paper-3:    oklch(95.5%  0.008 250);
-
-  /* ---- ink: cool near-black, not #000 ---- */
-  --color-ink:        oklch(21%    0.028 258);
-  --color-ink-2:      oklch(38%    0.026 258);
-  --color-ink-3:      oklch(50%    0.024 258);
+  --color-paper-3:    oklch(94.2%  0.010 92);
+  --color-ink:        oklch(20%    0.030 258);
+  --color-ink-2:      oklch(37%    0.028 258);
+  --color-ink-3:      oklch(50%    0.026 258);
 
   /* ---- accent: brand blue, hue 258 sampled from the bot avatar ---- */
   --color-accent:     oklch(53%    0.19  258);
-  --color-accent-2:   oklch(48%    0.19  262);
+  --color-accent-2:   oklch(46%    0.19  262);
   --color-accent-ink: oklch(99%    0.004 250);
-  --color-focus:      oklch(48%    0.19  262);
-  --color-focus-halo: oklch(99%    0.004 250);
+  --color-focus:      oklch(46%    0.19  262);
+  --color-focus-halo: oklch(100%   0     0);
+
+  /* ---- tint ramp: one hue, five steps, blocks use these instead of new hues ---- */
+  --tint-1: oklch(53% 0.19 258 / 0.045);
+  --tint-2: oklch(53% 0.19 258 / 0.085);
+  --tint-3: oklch(53% 0.19 258 / 0.14);
 
   /* ---- rules ---- */
-  --rule-dot:         oklch(21%    0.028 258  / 0.07);
-  --color-rule:       oklch(21%    0.028 258  / 0.12);
-  --color-rule-2:     oklch(21%    0.028 258  / 0.26);
-  --color-rule-warm:  oklch(56%    0.19  258  / 0.3);
+  --rule-dot:    oklch(20% 0.030 258 / 0.06);
+  --color-rule:  oklch(20% 0.030 258 / 0.12);
+  --color-rule-2: oklch(20% 0.030 258 / 0.28);
+  --color-rule-warm: oklch(53% 0.19 258 / 0.34);
 
-  /* ---- type: grotesk display, grotesk body, mono label ---- */
+  /* ---- type ---- */
   --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
   --font-body: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
   --font-label: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
@@ -39,38 +42,35 @@
   --text-lg:   1.0625rem;
   --text-xl:   1.25rem;
   --text-2xl:  clamp(1.75rem, 1.4rem + 1.6vw, 2.375rem);
-  --text-3xl:  clamp(2.375rem, 1.7rem + 3.4vw, 4rem);
-  --text-4xl:  clamp(3rem, 1.8rem + 6vw, 6rem);
+  --text-3xl:  clamp(2.5rem, 1.7rem + 3.6vw, 4.25rem);
+  --text-4xl:  clamp(3.25rem, 1.6rem + 7vw, 7.5rem);
 
-  --leading-tight: 0.94;
-  --leading-snug:  1.18;
+  --leading-tight: 0.9;
+  --leading-snug:  1.15;
   --leading-body:  1.55;
 
   --tracking-eyebrow: 0.18em;
-  --tracking-display: -0.045em;
+  --tracking-display: -0.05em;
   --tracking-body: -0.011em;
 
-  /* ---- hit target ---- */
-  --tap: 48px;
-
-  /* ---- space: 4pt grid ---- */
+  /* ---- space ---- */
   --space-3xs: 0.25rem;
   --space-2xs: 0.5rem;
   --space-xs:  0.75rem;
   --space-sm:  1rem;
   --space-md:  1.5rem;
-  --space-lg:  2.25rem;
-  --space-xl:  3rem;
-  --space-2xl: 4rem;
-  --space-3xl: 5.5rem;
+  --space-lg:  2.5rem;
+  --space-xl:  3.5rem;
+  --space-2xl: 5rem;
+  --space-3xl: 7rem;
 
   /* ---- frame ---- */
-  --wrap: 52rem;
+  --wrap: 54rem;
   --gutter: 1.25rem;
 
   /* ---- shape: one scale ---- */
-  --radius-tile: 1.5rem;
-  --radius-core: 1.125rem;
+  --radius-tile: 1.75rem;
+  --radius-core: 1.25rem;
   --radius-ico:  0.75rem;
   --radius-mark: 1.5rem;
   --radius-pill: 999px;
@@ -80,15 +80,18 @@
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --dur-base: 260ms;
   --dur-breathe: 3.4s;
-  --dur-rise: 700ms;
+  --dur-rise: 760ms;
 
-  /* ---- depth: tinted, never pure black ---- */
-  --lift-1: 0 1px 2px oklch(21% 0.028 258 / 0.05),
-           0 4px 12px oklch(21% 0.028 258 / 0.05);
-  --lift-2: 0 2px 4px oklch(21% 0.028 258 / 0.05),
-           0 14px 34px oklch(21% 0.028 258 / 0.10);
-  --lift-3: 0 3px 6px oklch(21% 0.028 258 / 0.06),
-           0 28px 64px oklch(21% 0.028 258 / 0.14);
+  /* ---- depth: tinted with the ink hue, never pure black ---- */
+  --lift-1: 0 1px 2px oklch(20% 0.03 258 / 0.05),
+           0 4px 12px oklch(20% 0.03 258 / 0.05);
+  --lift-2: 0 2px 4px oklch(20% 0.03 258 / 0.05),
+           0 16px 36px oklch(20% 0.03 258 / 0.10);
+  --lift-3: 0 3px 6px oklch(20% 0.03 258 / 0.06),
+           0 30px 70px oklch(20% 0.03 258 / 0.15);
+
+  /* ---- hit target ---- */
+  --tap: 48px;
 }
 
 @media (min-width: 40rem) {
