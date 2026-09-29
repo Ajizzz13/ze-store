@@ -1,4 +1,5 @@
 [
+  { "date": "2026-09-29", "macrostructure": "Index-First", "theme": "Cobalt", "enrichment": "none", "brief": "link-in-bio as a categorised link index, N9 nav, Ft4 colophon", "nav": "N9", "footer": "Ft4" },
   { "date": "2026-09-29", "macrostructure": "Number-First", "theme": "cobalt-on-porcelain", "enrichment": "none", "brief": "number-first hero, warm paper, per-day price columns, tinted boards", "theme_axes": "warm-neutral paper / grotesk display / blue accent hue 258" },
   { "date": "2026-09-29", "macrostructure": "Bento", "theme": "cobalt-on-void", "enrichment": "none", "brief": "link-in-bio for ZE VPN Store, brand blue lifted from @ZeStoreOrderBot avatar" }
 ]

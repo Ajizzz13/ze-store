@@ -1,0 +1,8 @@
+{
+  "date": "2026-09-29",
+  "font_stack": "self-hosted variable woff2: Space Grotesk (display) + Inter Tight (body) + JetBrains Mono (outlier)",
+  "palette": "OKLCH custom properties in tokens.css :root",
+  "motion": "motion-cut, hand-written CSS transitions only, no library",
+  "spacing": "4-pt scale via --space-* custom properties",
+  "framework": "vanilla HTML, no build step, Cloudflare Pages static Git integration"
+}
