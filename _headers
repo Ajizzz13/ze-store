@@ -1,0 +1,17 @@
+/font/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/logo.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/logo-512.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/og.jpg
+  Cache-Control: public, max-age=604800
+
+/tokens.css
+  Cache-Control: public, max-age=604800
+
+/style.css
+  Cache-Control: public, max-age=604800
