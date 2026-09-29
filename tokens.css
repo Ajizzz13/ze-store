@@ -22,7 +22,6 @@
   /* ---- tint ramp: one hue, five steps, blocks use these instead of new hues ---- */
   --tint-1: oklch(53% 0.19 258 / 0.045);
   --tint-2: oklch(53% 0.19 258 / 0.085);
-  --tint-3: oklch(53% 0.19 258 / 0.14);
 
   /* ---- rules ---- */
   --rule-dot:    oklch(20% 0.030 258 / 0.06);
@@ -39,7 +38,6 @@
   --text-xs:   0.75rem;
   --text-sm:   0.8125rem;
   --text-base: 0.9375rem;
-  --text-lg:   1.0625rem;
   --text-xl:   1.25rem;
   --text-2xl:  clamp(1.75rem, 1.4rem + 1.6vw, 2.375rem);
   --text-3xl:  clamp(2.5rem, 1.7rem + 3.6vw, 4.25rem);
@@ -62,7 +60,6 @@
   --space-lg:  2.5rem;
   --space-xl:  3.5rem;
   --space-2xl: 5rem;
-  --space-3xl: 7rem;
 
   /* ---- frame ---- */
   --wrap: 54rem;
@@ -71,7 +68,6 @@
   /* ---- shape: one scale ---- */
   --radius-tile: 1.75rem;
   --radius-core: 1.25rem;
-  --radius-ico:  0.75rem;
   --radius-mark: 1.5rem;
   --radius-pill: 999px;
 
@@ -80,14 +76,12 @@
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --dur-base: 260ms;
   --dur-breathe: 3.4s;
-  --dur-rise: 760ms;
 
   /* ---- depth: tinted with the ink hue, never pure black ---- */
   --lift-1: 0 1px 2px oklch(20% 0.03 258 / 0.05),
            0 4px 12px oklch(20% 0.03 258 / 0.05);
   --lift-2: 0 2px 4px oklch(20% 0.03 258 / 0.05),
            0 16px 36px oklch(20% 0.03 258 / 0.10);
-  --lift-3: 0 3px 6px oklch(20% 0.03 258 / 0.06),
            0 30px 70px oklch(20% 0.03 258 / 0.15);
 
   /* ---- hit target ---- */
