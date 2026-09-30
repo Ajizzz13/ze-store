@@ -1,45 +1,60 @@
-/* ZE VPN Store - token layer. Cobalt.
-   Cool near-white paper, one electric cobalt accent sampled from the
-   @ZeStoreOrderBot avatar. Genre: modern-minimal. Register: instrument panel.
+/* ZE VPN Store - token layer. Warm Monochrome.
+   Warm bone ground, off-black ink, one desaturated slate accent.
+   Genre: editorial-minimal. Register: document / instrument panel.
    Every colour in the page resolves here. No hex, no oklch() outside :root. */
 
 :root {
-  /* ---- ground: cool engineered near-white, never #fff ---- */
-  --color-paper:      oklch(99%    0.003 250);
-  --color-paper-2:    oklch(96.8%  0.005 250);
-  --color-ink:        oklch(19%    0.024 258);
-  --color-ink-2:      oklch(36%    0.022 258);
-  --color-ink-3:      oklch(50%    0.020 258);
+  /* ---- ground: warm bone, never pure #fff, never cool ---- */
+  --color-paper:      oklch(99.2% 0.004  85);
+  --color-paper-2:    oklch(97.4% 0.006  85);
+  --color-paper-3:    oklch(95.2% 0.007  85);
 
-  /* ---- accent: cobalt, hue 258 sampled from the bot avatar ---- */
-  --color-accent:     oklch(52%    0.19  258);
-  --color-accent-ink: oklch(99%    0.003 250);
-  --color-focus:      oklch(45%    0.19  262);
-  --color-focus-halo: oklch(99%    0.003 250);
+  /* ---- ink: warm off-black, never absolute #000 ---- */
+  --color-ink:        oklch(21%   0.008  75);
+  --color-ink-2:      oklch(38%   0.010  75);
+  --color-ink-3:      oklch(53%   0.011  75);
 
-  /* ---- rules: ruler-drawn, visible, not hairline-skeletal ---- */
-  --color-rule:   oklch(19% 0.024 258 / 0.13);
-  --color-rule-2: oklch(19% 0.024 258 / 0.28);
-  --color-rule-3: oklch(19% 0.024 258 / 0.06);
+  /* ---- accent: desaturated slate-blue. Semantic emphasis only. ---- */
+  --color-accent:     oklch(46%   0.055 258);
+  --color-accent-ink: oklch(99.2% 0.004  85);
+  --color-focus:      oklch(40%   0.070 258);
+  --color-focus-halo: oklch(99.2% 0.004  85);
 
-  /* ---- type: Space Grotesk display, Inter Tight body, JetBrains Mono ---- */
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  /* ---- pastel washes: tags, inline marks, icon grounds ---- */
+  --wash-blue:   #E1F3FE;
+  --wash-blue-i: #1F6C9F;
+  --wash-green:  #EDF3EC;
+  --wash-green-i:#346538;
+  --wash-yellow: #FBF3DB;
+  --wash-yellow-i:#956400;
+  --wash-red:    #FDEBEC;
+  --wash-red-i:  #9F2F2D;
+
+  /* ---- rules: warm hairline, exactly #EAEAEA register ---- */
+  --color-rule:   oklch(21% 0.008 75 / 0.09);
+  --color-rule-2: oklch(21% 0.008 75 / 0.16);
+  --color-rule-3: oklch(21% 0.008 75 / 0.05);
+
+  /* ---- type: system serif hero, system sans UI, mono meta ---- */
+  --font-display: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino,
+                  Charter, Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI Variable Text",
+               "Segoe UI", Switzer, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", "Geist Mono", Menlo, Consolas, monospace;
 
   --text-2xs:  0.6875rem;
   --text-xs:   0.8125rem;
   --text-sm:   0.875rem;
   --text-base: 1rem;
   --text-lg:   1.125rem;
-  --text-3xl:  clamp(2rem, 1.4rem + 2.6vw, 3.5rem);
+  --text-3xl:  clamp(2.25rem, 1.5rem + 3vw, 4rem);
 
-  --leading-snug: 1.25;
+  --leading-snug: 1.1;
   --leading-body: 1.6;
 
-  --tracking-display: -0.045em;
-  --tracking-body: -0.011em;
-  --tracking-label: 0.14em;
+  --tracking-display: -0.03em;
+  --tracking-body: -0.006em;
+  --tracking-label: 0.05em;
 
   /* ---- space: 4pt grid ---- */
   --space-2xs: 0.5rem;
@@ -48,28 +63,29 @@
   --space-md:  1.5rem;
   --space-lg:  2.5rem;
   --space-xl:  4rem;
+  --space-2xl: 6rem;
 
   /* ---- frame ---- */
   --wrap: 72rem;
   --gutter: clamp(1.125rem, 4vw, 2.5rem);
 
-  /* ---- shape: tight radii, the Cobalt register ---- */
+  /* ---- shape: crisp radii. 8-12px cards, 4-6px controls. ---- */
+  --radius-card: 0.625rem;
   --radius-tile: 0.375rem;
   --radius-core: 0.25rem;
+  --radius-chip: 999px;
 
-  /* ---- motion: spring-like interpolation for premium micro-interactions ---- */
-  --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+  /* ---- motion: quiet, invisible ---- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-quick: 220ms;
-  --dur-base: 700ms;
-  --dur-reveal: 900ms;
-  --color-accent-soft: oklch(96% 0.025 258);
+  --dur-quick: 200ms;
+  --dur-base: 400ms;
+  --dur-reveal: 600ms;
 
-  /* ---- depth: restrained, diffused, cobalt-tinted ---- */
-  --shadow-soft: 0 1.25rem 3rem oklch(19% 0.024 258 / 0.08);
-  --shadow-inset: inset 0 1px 1px oklch(99% 0.003 250 / 0.7);
-
-  /* ---- depth: tinted with the ink hue ---- */
+  /* ---- depth: ultra-diffuse, low opacity, warm-tinted ---- */
+  --shadow-soft:  0 0 0 0 transparent;
+  --shadow-lift:  0 2px 8px oklch(21% 0.008 75 / 0.04);
+  --shadow-inset: inset 0 1px 1px oklch(99.2% 0.004 85 / 0.7);
 
   /* ---- hit target ---- */
   --tap: 44px;
