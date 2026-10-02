@@ -134,15 +134,15 @@ function parseProxyLink(link) {
 
 function generateRikigarengYaml(type, host, port, uuid, sni, path) {
   const pName = "ZE-VPN-CONFIG";
-  const isTls = (port === "443" || port === 443) ? "tls: true, " : "tls: true, "; // Bug config butuh TLS
+  const isTls = "tls: true\n    ";
   
   let proxyStr = "";
   if (type === "trojan") {
-    proxyStr = `{name: ${pName}, server: ${host}, port: ${port}, type: trojan, password: ${uuid}, skip-cert-verify: true, sni: ${sni}, network: ws, ws-opts: {path: ${path}, headers: {Host: ${sni}}}, udp: true}`;
+    proxyStr = `- name: ${pName}\n    server: ${host}\n    port: ${port}\n    type: trojan\n    password: ${uuid}\n    skip-cert-verify: true\n    sni: ${sni}\n    network: ws\n    ws-opts:\n      path: ${path}\n      headers:\n        Host: ${sni}\n    udp: true`;
   } else if (type === "vmess") {
-    proxyStr = `{name: ${pName}, server: ${host}, port: ${port}, type: vmess, uuid: ${uuid}, alterId: 0, cipher: auto, ${isTls}skip-cert-verify: true, servername: ${sni}, network: ws, ws-opts: {path: ${path}, headers: {Host: ${sni}}}, udp: true}`;
+    proxyStr = `- name: ${pName}\n    server: ${host}\n    port: ${port}\n    type: vmess\n    uuid: ${uuid}\n    alterId: 0\n    cipher: auto\n    ${isTls}skip-cert-verify: true\n    servername: ${sni}\n    network: ws\n    ws-opts:\n      path: ${path}\n      headers:\n        Host: ${sni}\n    udp: true`;
   } else {
-    proxyStr = `{name: ${pName}, server: ${host}, port: ${port}, type: vless, uuid: ${uuid}, ${isTls}skip-cert-verify: true, servername: ${sni}, network: ws, ws-opts: {path: ${path}, headers: {Host: ${sni}}}, udp: true}`;
+    proxyStr = `- name: ${pName}\n    server: ${host}\n    port: ${port}\n    type: vless\n    uuid: ${uuid}\n    ${isTls}skip-cert-verify: true\n    servername: ${sni}\n    network: ws\n    ws-opts:\n      path: ${path}\n      headers:\n        Host: ${sni}\n    udp: true`;
   }
 
   return `port: 7890
