@@ -3,14 +3,13 @@ export default {
     if (request.method === "POST") {
       const payload = await request.json();
       
-      // 1. Handle Tombol Ditekan (Callback Query)
+      // 1. Handle Tombol Ditekan
       if (payload.callback_query) {
         const query = payload.callback_query;
         const chatId = query.message.chat.id;
         const preset = query.data;
         const messageId = query.message.message_id;
         
-        // Ambil link dari pesan asli yang di-reply oleh tombol ini
         const originalLink = query.message.reply_to_message ? query.message.reply_to_message.text : null;
         
         if (!originalLink) {
@@ -19,31 +18,36 @@ export default {
         }
 
         try {
+          await answerCallbackQuery(env.BOT_TOKEN, query.id, "Memproses config via sub.bonds.id...");
+          
           const parsed = parseProxyLink(originalLink);
-          let bugHost = parsed.host; // Default (Normal)
-          let filename = "config_normal.yaml";
+          let bugHost = parsed.host; // Default
+          let filename = "ze_config_normal.yaml";
 
           if (preset === "preset_haloflexy") {
             bugHost = `support.zoom.us.${parsed.host}`;
-            filename = "config_haloflexy.yaml";
+            filename = "ze_config_haloflexy.yaml";
           } else if (preset === "preset_axis") {
             bugHost = `v.whatsapp.net.${parsed.host}`;
-            filename = "config_axis.yaml";
+            filename = "ze_config_axis.yaml";
           }
           
-          const yaml = generateYaml(parsed.type, parsed.host, parsed.port, parsed.uuid, bugHost, parsed.path);
+          // Buat link baru dengan bug yang sudah disuntik
+          const newLink = buildProxyLink(parsed.type, bugHost, parsed.port, parsed.uuid, parsed.path);
           
-          // Jawab loading ke user
-          await answerCallbackQuery(env.BOT_TOKEN, query.id, "Config sedang dikirim...");
+          // Fetch dari sub.bonds.id
+          const subUrl = `https://sub.bonds.id/sub?target=clash&url=${encodeURIComponent(newLink)}&insert=false`;
+          const subResp = await fetch(subUrl);
+          
+          if (!subResp.ok) throw new Error("Gagal fetch dari sub.bonds.id");
+          const yaml = await subResp.text();
           
           // Kirim file YAML
           await sendDocument(env.BOT_TOKEN, chatId, yaml, filename);
-          
-          // Edit pesan tombol biar gak dipencet berkali-kali
-          await editMessageText(env.BOT_TOKEN, chatId, messageId, `✅ Config ${filename} berhasil dibuat!`);
+          await editMessageText(env.BOT_TOKEN, chatId, messageId, `✅ Config ${filename} berhasil di-generate pakai format sub.bonds.id!`);
           
         } catch (e) {
-          await answerCallbackQuery(env.BOT_TOKEN, query.id, "Gagal memproses link.");
+          await answerCallbackQuery(env.BOT_TOKEN, query.id, "Gagal generate dari sub.bonds.id.");
         }
         return new Response("OK");
       }
@@ -59,9 +63,7 @@ export default {
           return new Response("OK");
         }
 
-        // Kalau pesan diawali link proxy
         if (text.startsWith("vless://") || text.startsWith("vmess://") || text.startsWith("trojan://")) {
-          // Tampilkan tombol Preset
           const keyboard = {
             inline_keyboard: [
               [{ text: "Halo Flexy (Zoom)", callback_data: "preset_haloflexy" }],
@@ -70,8 +72,7 @@ export default {
             ]
           };
           
-          // Penting: Harus me-reply pesan asli user biar link-nya bisa diambil nanti
-          await sendMessageWithKeyboard(env.BOT_TOKEN, chatId, "Pilih Preset Bug untuk config ini:", keyboard, messageId);
+          await sendMessageWithKeyboard(env.BOT_TOKEN, chatId, "Pilih Preset Bug (Config akan digenerate via sub.bonds.id):", keyboard, messageId);
           return new Response("OK");
         }
         
@@ -85,43 +86,22 @@ export default {
 
 async function answerCallbackQuery(token, queryId, text) {
   const url = `https://api.telegram.org/bot${token}/answerCallbackQuery`;
-  await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ callback_query_id: queryId, text: text, show_alert: false })
-  });
+  await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ callback_query_id: queryId, text: text, show_alert: false }) });
 }
 
 async function editMessageText(token, chatId, messageId, text) {
   const url = `https://api.telegram.org/bot${token}/editMessageText`;
-  await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, message_id: messageId, text: text })
-  });
+  await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chatId, message_id: messageId, text: text }) });
 }
 
 async function sendMessage(token, chatId, text) {
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
-  await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text: text })
-  });
+  await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chatId, text: text }) });
 }
 
 async function sendMessageWithKeyboard(token, chatId, text, keyboard, replyToMessageId) {
   const url = `https://api.telegram.org/bot${token}/sendMessage`;
-  await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ 
-      chat_id: chatId, 
-      text: text, 
-      reply_markup: keyboard,
-      reply_to_message_id: replyToMessageId
-    })
-  });
+  await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chatId, text: text, reply_markup: keyboard, reply_to_message_id: replyToMessageId }) });
 }
 
 async function sendDocument(token, chatId, contentStr, filename) {
@@ -130,7 +110,6 @@ async function sendDocument(token, chatId, contentStr, filename) {
   formData.append("chat_id", chatId);
   const blob = new Blob([contentStr], { type: "text/yaml" });
   formData.append("document", blob, filename);
-
   await fetch(url, { method: "POST", body: formData });
 }
 
@@ -149,7 +128,6 @@ function parseProxyLink(link) {
       throw new Error("Invalid VMess base64");
     }
   } else {
-    // Trick parser: ubah vless/trojan ke http sementara biar bisa di-parse URL API bawaan JS
     const urlObj = new URL(link.replace(/^(vless|trojan):\/\//, "http://"));
     host = urlObj.hostname;
     port = urlObj.port || 443;
@@ -160,25 +138,19 @@ function parseProxyLink(link) {
   return { type, host, port, uuid, path };
 }
 
-function generateYaml(type, host, port, uuid, sni, path) {
-  return `port: 7890
-proxies:
-  - name: "ZE-VPN-CONFIG"
-    type: ${type}
-    server: ${host}
-    port: ${port}
-    password: ${uuid}
-    uuid: ${uuid}
-    sni: ${sni}
-    network: ws
-    ws-opts:
-      path: ${path}
-      headers:
-        Host: ${sni}
-proxy-groups:
-  - name: "Proxy"
-    type: select
-    proxies: ["ZE-VPN-CONFIG"]
-rules:
-  - MATCH,Proxy`;
+function buildProxyLink(type, bugHost, port, uuid, path) {
+  // Bikin link baru dengan bug ter-inject, wajib TLS
+  if (type === "vmess") {
+    const vmessObj = {
+      v: "2", ps: "ZE-VPN", add: bugHost, port: port, id: uuid,
+      aid: "0", net: "ws", type: "none", host: bugHost,
+      path: path, tls: "tls", sni: bugHost
+    };
+    // Helper untuk worker (tanpa btoa bawaan)
+    const encoded = btoa(JSON.stringify(vmessObj));
+    return `vmess://${encoded}`;
+  } else {
+    // VLESS / Trojan
+    return `${type}://${uuid}@${bugHost}:${port}?type=ws&security=tls&path=${encodeURIComponent(path)}&sni=${bugHost}&host=${bugHost}#ZE-VPN`;
+  }
 }
