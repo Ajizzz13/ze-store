@@ -3,7 +3,7 @@ export default {
     if (request.method === "POST") {
       const payload = await request.json();
       
-      // 1. Handle Tombol Ditekan
+      // 1. Handle Callback Query (Tombol Preset Ditekan)
       if (payload.callback_query) {
         const query = payload.callback_query;
         const chatId = query.message.chat.id;
@@ -18,8 +18,6 @@ export default {
         }
 
         try {
-          await answerCallbackQuery(env.BOT_TOKEN, query.id, "Memproses config via sub.bonds.id...");
-          
           const parsed = parseProxyLink(originalLink);
           let bugHost = parsed.host; // Default
           let filename = "ze_config_normal.yaml";
@@ -32,22 +30,15 @@ export default {
             filename = "ze_config_axis.yaml";
           }
           
-          // Buat link baru dengan bug yang sudah disuntik
-          const newLink = buildProxyLink(parsed.type, bugHost, parsed.port, parsed.uuid, parsed.path);
+          // Generate YAML Native menggunakan Template Rikigareng
+          const yaml = generateRikigarengYaml(parsed.type, parsed.host, parsed.port, parsed.uuid, bugHost, parsed.path || '/');
           
-          // Fetch dari sub.bonds.id
-          const subUrl = `https://sub.bonds.id/sub?target=clash&url=${encodeURIComponent(newLink)}&insert=false`;
-          const subResp = await fetch(subUrl);
-          
-          if (!subResp.ok) throw new Error("Gagal fetch dari sub.bonds.id");
-          const yaml = await subResp.text();
-          
-          // Kirim file YAML
+          await answerCallbackQuery(env.BOT_TOKEN, query.id, "Config sedang dikirim...");
           await sendDocument(env.BOT_TOKEN, chatId, yaml, filename);
-          await editMessageText(env.BOT_TOKEN, chatId, messageId, `✅ Config ${filename} berhasil di-generate pakai format sub.bonds.id!`);
+          await editMessageText(env.BOT_TOKEN, chatId, messageId, `✅ Config ${filename} berhasil dibuat! (Format OpenClash Lengkap)`);
           
         } catch (e) {
-          await answerCallbackQuery(env.BOT_TOKEN, query.id, "Gagal generate dari sub.bonds.id.");
+          await answerCallbackQuery(env.BOT_TOKEN, query.id, "Gagal memproses link.");
         }
         return new Response("OK");
       }
@@ -72,7 +63,7 @@ export default {
             ]
           };
           
-          await sendMessageWithKeyboard(env.BOT_TOKEN, chatId, "Pilih Preset Bug (Config akan digenerate via sub.bonds.id):", keyboard, messageId);
+          await sendMessageWithKeyboard(env.BOT_TOKEN, chatId, "Pilih Preset Bug untuk config ini:", keyboard, messageId);
           return new Response("OK");
         }
         
@@ -85,32 +76,38 @@ export default {
 };
 
 async function answerCallbackQuery(token, queryId, text) {
-  const url = `https://api.telegram.org/bot${token}/answerCallbackQuery`;
-  await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ callback_query_id: queryId, text: text, show_alert: false }) });
+  await fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ callback_query_id: queryId, text: text, show_alert: false })
+  });
 }
 
 async function editMessageText(token, chatId, messageId, text) {
-  const url = `https://api.telegram.org/bot${token}/editMessageText`;
-  await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chatId, message_id: messageId, text: text }) });
+  await fetch(`https://api.telegram.org/bot${token}/editMessageText`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, message_id: messageId, text: text })
+  });
 }
 
 async function sendMessage(token, chatId, text) {
-  const url = `https://api.telegram.org/bot${token}/sendMessage`;
-  await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chatId, text: text }) });
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text: text })
+  });
 }
 
 async function sendMessageWithKeyboard(token, chatId, text, keyboard, replyToMessageId) {
-  const url = `https://api.telegram.org/bot${token}/sendMessage`;
-  await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: chatId, text: text, reply_markup: keyboard, reply_to_message_id: replyToMessageId }) });
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text: text, reply_markup: keyboard, reply_to_message_id: replyToMessageId })
+  });
 }
 
 async function sendDocument(token, chatId, contentStr, filename) {
-  const url = `https://api.telegram.org/bot${token}/sendDocument`;
   const formData = new FormData();
   formData.append("chat_id", chatId);
-  const blob = new Blob([contentStr], { type: "text/yaml" });
-  formData.append("document", blob, filename);
-  await fetch(url, { method: "POST", body: formData });
+  formData.append("document", new Blob([contentStr], { type: "text/yaml" }), filename);
+  await fetch(`https://api.telegram.org/bot${token}/sendDocument`, { method: "POST", body: formData });
 }
 
 function parseProxyLink(link) {
@@ -124,9 +121,7 @@ function parseProxyLink(link) {
       port = decoded.port;
       uuid = decoded.id;
       path = decoded.path || "/";
-    } catch(e) {
-      throw new Error("Invalid VMess base64");
-    }
+    } catch(e) { throw new Error("Invalid VMess base64"); }
   } else {
     const urlObj = new URL(link.replace(/^(vless|trojan):\/\//, "http://"));
     host = urlObj.hostname;
@@ -134,23 +129,72 @@ function parseProxyLink(link) {
     uuid = urlObj.username;
     path = urlObj.searchParams.get("path") || "/";
   }
-
   return { type, host, port, uuid, path };
 }
 
-function buildProxyLink(type, bugHost, port, uuid, path) {
-  // Bikin link baru dengan bug ter-inject, wajib TLS
-  if (type === "vmess") {
-    const vmessObj = {
-      v: "2", ps: "ZE-VPN", add: bugHost, port: port, id: uuid,
-      aid: "0", net: "ws", type: "none", host: bugHost,
-      path: path, tls: "tls", sni: bugHost
-    };
-    // Helper untuk worker (tanpa btoa bawaan)
-    const encoded = btoa(JSON.stringify(vmessObj));
-    return `vmess://${encoded}`;
+function generateRikigarengYaml(type, host, port, uuid, sni, path) {
+  const pName = "ZE-VPN-CONFIG";
+  const isTls = (port === "443" || port === 443) ? "tls: true, " : "tls: true, "; // Bug config butuh TLS
+  
+  let proxyStr = "";
+  if (type === "trojan") {
+    proxyStr = `{name: ${pName}, server: ${host}, port: ${port}, type: trojan, password: ${uuid}, skip-cert-verify: true, sni: ${sni}, network: ws, ws-opts: {path: ${path}, headers: {Host: ${sni}}}, udp: true}`;
+  } else if (type === "vmess") {
+    proxyStr = `{name: ${pName}, server: ${host}, port: ${port}, type: vmess, uuid: ${uuid}, alterId: 0, cipher: auto, ${isTls}skip-cert-verify: true, servername: ${sni}, network: ws, ws-opts: {path: ${path}, headers: {Host: ${sni}}}, udp: true}`;
   } else {
-    // VLESS / Trojan
-    return `${type}://${uuid}@${bugHost}:${port}?type=ws&security=tls&path=${encodeURIComponent(path)}&sni=${bugHost}&host=${bugHost}#ZE-VPN`;
+    proxyStr = `{name: ${pName}, server: ${host}, port: ${port}, type: vless, uuid: ${uuid}, ${isTls}skip-cert-verify: true, servername: ${sni}, network: ws, ws-opts: {path: ${path}, headers: {Host: ${sni}}}, udp: true}`;
   }
+
+  return `port: 7890
+socks-port: 7891
+redir-port: 7892
+mixed-port: 7893
+tproxy-port: 7895
+ipv6: false
+mode: rule
+log-level: silent
+allow-lan: true
+external-controller: 0.0.0.0:9090
+secret: ''
+bind-address: '*'
+unified-delay: true
+profile:
+  store-selected: true
+dns:
+  enable: true
+  ipv6: false
+  enhanced-mode: redir-host
+  listen: 0.0.0.0:7874
+  nameserver:
+    - 8.8.8.8
+    - 1.0.0.1
+    - https://dns.google/dns-query
+  fallback:
+    - 1.1.1.1
+    - 8.8.4.4
+    - https://cloudflare-dns.com/dns-query
+  default-nameserver:
+    - 8.8.8.8
+    - 1.1.1.1
+
+proxies:
+  - ${proxyStr}
+
+proxy-groups:
+  - name: Friendly_Teams
+    type: select
+    proxies:
+      - ${pName}
+      - BEST-PING
+      - DIRECT
+  - name: BEST-PING
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    proxies:
+      - ${pName}
+
+rules:
+  - MATCH,Friendly_Teams`;
 }
