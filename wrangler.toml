@@ -3,5 +3,6 @@ main = "worker.js"
 compatibility_date = "2024-05-20"
 
 compatibility_flags = [ "nodejs_compat" ]
+
 [vars]
-# GANTI_DENGAN_TOKEN_BOT_LU
+BOT_TOKEN = "8952930009:AAHa_cTf6WcEBV8oh00kKXski35Gh52xvM0"
