@@ -1,60 +1,90 @@
-import { Telegraf } from 'telegraf';
+export default {
+  async fetch(request, env) {
+    if (request.method === "POST") {
+      const payload = await request.json();
+      
+      // Jika update berasal dari pesan (message)
+      if (payload.message) {
+        const chatId = payload.message.chat.id;
+        const text = payload.message.text || "";
 
-const bot = new Telegraf(process.env.BOT_TOKEN);
-
-// Simple in-memory state for demo; use KV in production
-const userState = new Map();
-
-bot.start((ctx) => {
-    ctx.reply('Pilih Protokol:', {
-        reply_markup: {
-            inline_keyboard: [
-                [{ text: 'VLESS', callback_data: 'proto_vless' }, { text: 'VMess', callback_data: 'proto_vmess' }],
-                [{ text: 'Trojan', callback_data: 'proto_trojan' }]
-            ]
+        if (text.startsWith("/start")) {
+          await sendMessage(env.BOT_TOKEN, chatId, "Selamat datang di ZE VPN Config Generator.\nKirimkan link VLESS/VMess/Trojan Anda untuk diubah menjadi format OpenClash dengan Preset Halo Flexy.");
+          return new Response("OK");
         }
-    });
-});
 
-bot.action(/proto_(.*)/, (ctx) => {
-    const proto = ctx.match[1];
-    userState.set(ctx.from.id, { proto });
-    ctx.reply(`Protokol ${proto.toUpperCase()} terpilih. Kirim link proxy Anda:`);
-});
-
-bot.on('text', async (ctx) => {
-    const state = userState.get(ctx.from.id);
-    if (!state) return ctx.reply('Ketik /start untuk mulai.');
-
-    const link = ctx.message.text;
-    try {
-        // Simple Parser (Simplified for demonstration)
-        // In reality, use a robust parser like 'v2ray-parser'
-        const parsed = parseProxyLink(link);
+        // Kalau text mengandung format vless://
+        if (text.startsWith("vless://") || text.startsWith("vmess://") || text.startsWith("trojan://")) {
+          try {
+            const parsed = parseProxyLink(text);
+            const bugHost = `support.zoom.us.${parsed.host}`;
+            const yaml = generateYaml(parsed.type, parsed.host, parsed.port, parsed.uuid, bugHost, parsed.path || '/');
+            
+            await sendDocument(env.BOT_TOKEN, chatId, yaml, "config_halo_flexy.yaml");
+            return new Response("OK");
+          } catch (e) {
+            await sendMessage(env.BOT_TOKEN, chatId, "Gagal memproses link. Pastikan format valid.");
+            return new Response("Error processing link");
+          }
+        }
         
-        // Preset Bug: Halo Flexy
-        const bugHost = `support.zoom.us.${parsed.host}`;
-        const yaml = generateYaml(state.proto, parsed.host, parsed.port, parsed.uuid, bugHost, parsed.path || '/');
-
-        await ctx.replyWithDocument({ source: Buffer.from(yaml), filename: 'config.yaml' });
-    } catch (e) {
-        ctx.reply('Link tidak valid atau protokol tidak didukung.');
+        await sendMessage(env.BOT_TOKEN, chatId, "Kirimkan link VLESS/VMess/Trojan yang valid.");
+      }
+      return new Response("OK");
     }
-});
+    return new Response("ZE VPN Bot Running");
+  }
+};
+
+async function sendMessage(token, chatId, text) {
+  const url = `https://api.telegram.org/bot${token}/sendMessage`;
+  await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text: text })
+  });
+}
+
+async function sendDocument(token, chatId, contentStr, filename) {
+  const url = `https://api.telegram.org/bot${token}/sendDocument`;
+  
+  // Menggunakan FormData untuk mengirim file buffer
+  const formData = new FormData();
+  formData.append("chat_id", chatId);
+  
+  // Membuat Blob dari string YAML
+  const blob = new Blob([contentStr], { type: "text/yaml" });
+  formData.append("document", blob, filename);
+
+  await fetch(url, {
+    method: "POST",
+    body: formData
+  });
+}
 
 function parseProxyLink(link) {
-    // Basic parser logic for demo
-    const url = new URL(link);
-    return {
-        host: url.hostname,
-        port: url.port || 443,
-        uuid: url.username,
-        path: url.searchParams.get('path') || '/'
-    };
+  const type = link.split("://")[0];
+  const urlObj = new URL(link);
+  
+  let host = urlObj.hostname;
+  let port = urlObj.port || 443;
+  let uuid = urlObj.username;
+  let path = urlObj.searchParams.get("path") || "/";
+  
+  // Khusus vmess yang formatnya base64
+  if (type === "vmess") {
+    const decoded = JSON.parse(atob(link.replace("vmess://", "")));
+    host = decoded.add;
+    port = decoded.port;
+    uuid = decoded.id;
+    path = decoded.path || "/";
+  }
+
+  return { type, host, port, uuid, path };
 }
 
 function generateYaml(type, host, port, uuid, sni, path) {
-    return `port: 7890
+  return `port: 7890
 proxies:
   - name: "ZE-VPN-CONFIG"
     type: ${type}
@@ -74,7 +104,3 @@ proxy-groups:
 rules:
   - MATCH,Proxy`;
 }
-
-export default {
-    fetch: bot.webhookCallback('/webhook')
-};
