@@ -1,0 +1,6 @@
+name = "ze-vpn-generator"
+main = "worker.js"
+compatibility_date = "2024-05-20"
+
+[vars]
+# GANTI_DENGAN_TOKEN_BOT_LU

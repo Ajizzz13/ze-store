@@ -1,0 +1,9 @@
+{
+  "name": "ze-vpn-generator",
+  "version": "1.0.0",
+  "description": "Telegram Bot for OpenClash Config Generator",
+  "main": "worker.js",
+  "dependencies": {
+    "telegraf": "^4.15.3"
+  }
+}
