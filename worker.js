@@ -19,23 +19,23 @@ export default {
 
         try {
           const parsed = parseProxyLink(originalLink);
-          let bugHost = parsed.host; // Default
-          let filename = "ze_config_normal.yaml";
+          let bugHost = parsed.host;
+          let presetName = "Normal";
 
           if (preset === "preset_haloflexy") {
             bugHost = `support.zoom.us.${parsed.host}`;
-            filename = "ze_config_haloflexy.yaml";
+            presetName = "Halo Flexy";
           } else if (preset === "preset_axis") {
             bugHost = `v.whatsapp.net.${parsed.host}`;
-            filename = "ze_config_axis.yaml";
+            presetName = "Axis";
           }
           
-          // Generate YAML Native menggunakan Template Rikigareng
-          const yaml = generateRikigarengYaml(parsed.type, parsed.host, parsed.port, parsed.uuid, bugHost, parsed.path || '/');
+          const safeFilename = (parsed.name || "Config").replace(/[^a-zA-Z0-9]/g, "_") + ".yaml";
+          const yaml = generateRikigarengYaml(parsed.type, parsed.host, parsed.port, parsed.uuid, bugHost, parsed.path, parsed.name);
           
-          await answerCallbackQuery(env.BOT_TOKEN, query.id, "Config sedang dikirim...");
-          await sendDocument(env.BOT_TOKEN, chatId, yaml, filename);
-          await editMessageText(env.BOT_TOKEN, chatId, messageId, `✅ Config ${filename} berhasil dibuat! (Format OpenClash Lengkap)`);
+          await answerCallbackQuery(env.BOT_TOKEN, query.id, "Sedang mengirim...");
+          await sendDocument(env.BOT_TOKEN, chatId, yaml, safeFilename);
+          await editMessageText(env.BOT_TOKEN, chatId, messageId, `✅ Selesai: ${parsed.name} (${presetName})`);
           
         } catch (e) {
           await answerCallbackQuery(env.BOT_TOKEN, query.id, "Gagal memproses link.");
@@ -50,24 +50,23 @@ export default {
         const messageId = payload.message.message_id;
 
         if (text.startsWith("/start")) {
-          await sendMessage(env.BOT_TOKEN, chatId, "👋 Selamat datang di ZE VPN Config Generator.\n\nKirimkan link VLESS/VMess/Trojan Anda. Nanti akan muncul pilihan preset bug-nya.");
+          await sendMessage(env.BOT_TOKEN, chatId, "Kirim link VLESS/VMess/Trojan untuk diconvert ke OpenClash.");
           return new Response("OK");
         }
 
         if (text.startsWith("vless://") || text.startsWith("vmess://") || text.startsWith("trojan://")) {
           const keyboard = {
             inline_keyboard: [
-              [{ text: "Halo Flexy (Zoom)", callback_data: "preset_haloflexy" }],
-              [{ text: "Axis (WhatsApp)", callback_data: "preset_axis" }],
-              [{ text: "Normal (Tanpa Bug)", callback_data: "preset_normal" }]
+              [{ text: "Halo Flexy", callback_data: "preset_haloflexy" }, { text: "Axis", callback_data: "preset_axis" }],
+              [{ text: "Normal", callback_data: "preset_normal" }]
             ]
           };
           
-          await sendMessageWithKeyboard(env.BOT_TOKEN, chatId, "Pilih Preset Bug untuk config ini:", keyboard, messageId);
+          await sendMessageWithKeyboard(env.BOT_TOKEN, chatId, "Pilih Preset:", keyboard, messageId);
           return new Response("OK");
         }
         
-        await sendMessage(env.BOT_TOKEN, chatId, "Kirimkan link VLESS/VMess/Trojan yang valid (vless://...).");
+        await sendMessage(env.BOT_TOKEN, chatId, "Link tidak valid.");
       }
       return new Response("OK");
     }
@@ -112,7 +111,7 @@ async function sendDocument(token, chatId, contentStr, filename) {
 
 function parseProxyLink(link) {
   const type = link.split("://")[0];
-  let host, port, uuid, path;
+  let host, port, uuid, path, name;
 
   if (type === "vmess") {
     try {
@@ -121,6 +120,7 @@ function parseProxyLink(link) {
       port = decoded.port;
       uuid = decoded.id;
       path = decoded.path || "/";
+      name = decoded.ps || "ZE-VPN";
     } catch(e) { throw new Error("Invalid VMess base64"); }
   } else {
     const urlObj = new URL(link.replace(/^(vless|trojan):\/\//, "http://"));
@@ -128,12 +128,13 @@ function parseProxyLink(link) {
     port = urlObj.port || 443;
     uuid = urlObj.username;
     path = urlObj.searchParams.get("path") || "/";
+    name = decodeURIComponent(urlObj.hash.replace("#", "")) || "ZE-VPN";
   }
-  return { type, host, port, uuid, path };
+  return { type, host, port, uuid, path, name };
 }
 
-function generateRikigarengYaml(type, host, port, uuid, sni, path) {
-  const pName = "ZE-VPN-CONFIG";
+function generateRikigarengYaml(type, host, port, uuid, sni, path, pName) {
+  pName = pName || "ZE-VPN-CONFIG";
   const isTls = "tls: true\n    ";
   
   let proxyStr = "";
