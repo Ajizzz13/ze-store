@@ -1,14 +1,7 @@
 /* Zeroends Official - Design Tokens
-   System: Flat 2D Solid (Monochrome 2-Color Hierarchy)
-   Typography: Space Grotesk (Headings), Inter Tight (UI/Body), JetBrains Mono (Specs/Pricing)
+   System: Pure Swiss Minimalist (Full Sans + Monospace)
+   Typography: Inter Tight (Display & UI/Body), JetBrains Mono (Specs/Pricing)
 */
-
-@font-face {
-  font-family: 'Space Grotesk';
-  src: url('/font/space-grotesk-var.woff2') format('woff2');
-  font-weight: 300 700;
-  font-display: swap;
-}
 
 @font-face {
   font-family: 'Inter Tight';
@@ -41,9 +34,9 @@
   --border-light: #E4E4E7;
   --border-solid: #111111;
 
-  /* Typography */
-  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Typography: Pure Swiss Minimalist Architecture */
+  --font-display: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
   /* Dimensions & Spacing */
