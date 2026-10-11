@@ -205,14 +205,17 @@ body {
 }
 
 .link-card__icon {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
   stroke: currentColor;
   stroke-width: 2;
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
   flex-shrink: 0;
+  display: inline-block;
 }
 
 .link-card__title {
@@ -288,12 +291,15 @@ body {
 .content-card__icon {
   width: 15px;
   height: 15px;
+  min-width: 15px;
+  min-height: 15px;
   stroke: currentColor;
   stroke-width: 2;
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
   flex-shrink: 0;
+  display: inline-block;
 }
 
 .content-card__meta {
