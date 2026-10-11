@@ -10,10 +10,7 @@
 /og.jpg
   Cache-Control: public, max-age=604800
 
-/tokens.css
-  Cache-Control: public, max-age=0, must-revalidate
-
-/style.css
+/*.css
   Cache-Control: public, max-age=0, must-revalidate
 
 /robots.txt
