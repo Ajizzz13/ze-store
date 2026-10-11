@@ -46,7 +46,7 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--fg-primary);
+  outline: 2px solid var(--brand-primary);
   outline-offset: 3px;
 }
 
@@ -147,7 +147,11 @@ body {
 
 .link-card:hover {
   background-color: var(--bg-hover);
-  border-color: var(--border-solid);
+  border-color: var(--brand-primary);
+}
+
+.link-card:hover .link-card__title {
+  color: var(--brand-primary);
 }
 
 .link-card:active {
@@ -155,14 +159,14 @@ body {
 }
 
 .link-card--primary {
-  background-color: var(--bg-inverse);
+  background-color: var(--brand-primary);
   color: var(--fg-inverse);
-  border-color: var(--bg-inverse);
+  border-color: var(--brand-primary);
 }
 
 .link-card--primary:hover {
-  background-color: #27272A;
-  border-color: #27272A;
+  background-color: var(--brand-hover);
+  border-color: var(--brand-hover);
   color: var(--fg-inverse);
 }
 
@@ -185,13 +189,17 @@ body {
   height: 16px;
   min-width: 16px;
   min-height: 16px;
-  stroke: currentColor;
+  stroke: var(--brand-primary);
   stroke-width: 2;
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
   flex-shrink: 0;
   display: inline-block;
+}
+
+.link-card--primary .link-card__icon {
+  stroke: #FFFFFF;
 }
 
 .link-card__title {
@@ -209,7 +217,7 @@ body {
 }
 
 .link-card--primary .link-card__desc {
-  color: #A1A1AA;
+  color: #DBEAFE;
 }
 
 .link-card__arrow {
@@ -227,7 +235,7 @@ body {
 }
 
 .link-card:hover .link-card__arrow {
-  color: var(--fg-primary);
+  color: var(--brand-primary);
   transform: translate(1px, -1px);
 }
 
@@ -265,11 +273,11 @@ body {
 }
 
 .content-card__icon {
-  width: 15px;
-  height: 15px;
-  min-width: 15px;
-  min-height: 15px;
-  stroke: currentColor;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  stroke: var(--brand-primary);
   stroke-width: 2;
   fill: none;
   stroke-linecap: round;
@@ -278,6 +286,16 @@ body {
   display: inline-block;
 }
 
+.content-card__flag {
+  width: 20px;
+  height: 14px;
+  min-width: 20px;
+  min-height: 14px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
 .content-card__meta {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
@@ -333,8 +351,12 @@ body {
 }
 
 .pricing-table tr.highlight {
-  background-color: var(--bg-secondary);
+  background-color: var(--brand-soft);
   font-weight: 600;
+}
+
+.pricing-table tr.highlight td.num {
+  color: var(--brand-hover);
 }
 
 /* Spec Grid */
